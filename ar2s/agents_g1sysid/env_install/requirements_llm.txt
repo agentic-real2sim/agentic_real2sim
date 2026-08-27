@@ -1,0 +1,20 @@
+# ============================================================
+# ar2s.agents_g1sysid — agent/tool dependencies
+# ============================================================
+# Required for:
+#   Tool modules — @tool decorators used by inspection/submission skills
+#   Stage 1  — Motion Reader Agent  (run_motion_reader_agent)
+#   Stage 3  — Convergence Assessment Agent (assess_convergence)
+#
+# Set API keys for the providers enabled in ar2s/agent_configs/*.yaml:
+#   export ANTHROPIC_API_KEY=...
+#   export OPENAI_API_AR2S_KEY=...
+#   export QWEN_API_KEY=...
+# ============================================================
+
+langchain-core>=0.3.0
+langchain-anthropic>=0.3.0
+langgraph>=0.2.0
+
+# Uncomment if using OpenAI instead of Anthropic:
+# langchain-openai>=0.2.0

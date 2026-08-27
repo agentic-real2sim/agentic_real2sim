@@ -1,0 +1,62 @@
+<mujoco model="dual panda scene">
+  <include file="dual_panda.xml"/>
+
+  <option gravity="0 0 -9.81"/>
+  <statistic center="0.3 0 0.4" extent="1"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="120" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge"
+             rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8"
+             width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true"
+             texrepeat="5 5" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" type="plane" size="0 0 0.05" material="groundplane"/>
+
+    <!-- mocap targets (unchanged) -->
+    <body name="target_left"  pos="0.1 0 0.5" quat="0 0 0 1" mocap="true">
+      <geom type="box" size="0.05 0.05 0.05" contype="0" conaffinity="0"
+            rgba="0.6 0.3 0.3 0.0"/>
+    </body>
+    <body name="target_right" pos="0.1 0 0.5" quat="0 0 0 1" mocap="true">
+      <geom type="box" size="0.05 0.05 0.05" contype="0" conaffinity="0"
+            rgba="0.6 0.3 0.3 0.0"/>
+    </body>
+
+    <!-- simple table, now really on the ground -->
+    <body name="simple_table" pos="0 -0.4 0" quat="0 0 0 1">
+      <joint name="table_joint" type="free"/>
+
+      <!-- tabletop -->
+      <geom type="box" size="0.20 0.13 0.01" pos="0 0 0.25"
+            rgba="0.35 0.35 0.35 1"/>
+
+      <!-- legs -->
+      <geom type="box" size="0.015 0.015 0.12" pos=" 0.18  0.11 0.12"
+            rgba="0.3 0.3 0.3 1"/>
+      <geom type="box" size="0.015 0.015 0.12" pos="-0.18  0.11 0.12"
+            rgba="0.3 0.3 0.3 1"/>
+      <geom type="box" size="0.015 0.015 0.12" pos=" 0.18 -0.11 0.12"
+            rgba="0.3 0.3 0.3 1"/>
+      <geom type="box" size="0.015 0.015 0.12" pos="-0.18 -0.11 0.12"
+            rgba="0.3 0.3 0.3 1"/>
+
+      <!-- picking sites (mid-thickness) -->
+      <site name="site_right" pos="-0.20 0 0.25" size="0.005"
+            rgba="1 0 0 1"  type="sphere" euler="-1.57 1.57 0"/>
+      <site name="site_left"  pos=" 0.20 0 0.25" size="0.005"
+            rgba="0 1 0 1"  type="sphere" euler="-1.57 -1.57 0"/>
+    </body>
+
+  </worldbody>
+</mujoco>

@@ -1,0 +1,246 @@
+# Sonnet-only config — every stage/subagent uses anthropic:claude-sonnet-4-6.
+# Derived from config_default.yaml by dropping non-anthropic models and
+# rewriting all anthropic:claude-* entries to claude-sonnet-4-6.
+# Response policies were collapsed to `single` where the model list shrank to one.
+
+schema_version: 1
+providers:
+  anthropic:
+    credential_env: ANTHROPIC_API_KEY
+  openai:
+    credential_env: OPENAI_API_AR2S_KEY
+  qwen:
+    credential_env: QWEN_API_KEY
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  nhr_fau:
+    credential_env: NHR_FAU_GATEWAY_API_KEY
+    base_url: https://hub.nhr.fau.de/api/llmgw/v1
+model_overrides:
+  moonshotai/Kimi-K2.6:
+    min_max_tokens: 2048
+  RedHatAI/gemma-3-27b-it-quantized.w4a16:
+    min_max_tokens: 2048
+  RedHatAI/Mistral-Small-3.2-24B-Instruct-2506-FP8:
+    min_max_tokens: 2048
+stages:
+  pipeline:
+    main:
+      orchestrator:
+        type: llm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+  visual:
+    main:
+      orchestrator:
+        type: llm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+    subagents:
+      object_discovery:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: single
+      support_tree:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: single
+      pickup_objects:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: single
+      object_merging:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: single
+      ground_ref:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: single
+      camera_select:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: single
+      keyframe_select:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 400
+        response_policy: single
+      tracking_critic:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: single
+      mask_critic:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: single
+      box_detect:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: single
+      pose_view_critic:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: single
+      scene_mismatch_critic:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 1500
+        response_policy: single
+      object_view_compare:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 1500
+        response_policy: single
+  geometry_prior:
+    subagents:
+      mesh_orient:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+      z_anchor:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: single
+      ground_trust:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 1024
+        response_policy: single
+  physical_prior:
+    main:
+      orchestrator:
+        type: llm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+    subagents:
+      material_classify:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: single
+  scene_prep:
+    droid:
+      main:
+        orchestrator:
+          type: llm
+          models:
+          - anthropic:claude-sonnet-4-6
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+  grasp_optimization:
+    sweep_or_loop: sweep
+    subagents:
+      grasp_loop_view_sufficiency:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+      grasp_loop_shift_decision:
+        type: vlm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+  phystwin_visual:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  sysid:
+    phystwin:
+      main:
+        episode_agent:
+          type: llm
+          models:
+          - anthropic:claude-sonnet-4-6
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+        sysid_agent:
+          type: llm
+          models:
+          - anthropic:claude-sonnet-4-6
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+  g1sysid:
+    main:
+      motion_reader_agent:
+        type: llm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+    subagents:
+      convergence_agent:
+        type: llm
+        models:
+        - anthropic:claude-sonnet-4-6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single

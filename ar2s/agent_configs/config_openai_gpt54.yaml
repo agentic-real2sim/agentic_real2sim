@@ -1,0 +1,278 @@
+schema_version: 1
+
+# OpenAI-only runtime config for machines where Anthropic credentials are not
+# available. This preserves the same agent paths as config_anthropic_opus47.yaml so CLI
+# callers can switch with:
+#
+#   --agent-config ar2s/agent_configs/config_openai_gpt54.yaml
+
+providers:
+  anthropic:
+    credential_env: ANTHROPIC_API_KEY
+  openai:
+    credential_env: OPENAI_API_UBC_PHYSAI_AR2S_KEY
+  qwen:
+    credential_env: QWEN_API_KEY
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  nhr_fau:
+    credential_env: NHR_FAU_GATEWAY_API_KEY
+    base_url: https://hub.nhr.fau.de/api/llmgw/v1
+
+model_overrides:
+  gpt-5.4:
+    min_max_tokens: 16384
+  RedHatAI/Mistral-Small-3.2-24B-Instruct-2506-FP8:
+    min_max_tokens: 2048
+
+stages:
+  pipeline:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  visual:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      scene_mismatch_critic:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 1500
+        response_policy: single
+
+      object_view_compare:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 1500
+        response_policy: single
+
+      pose_view_critic:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: single
+
+      object_discovery:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+        reasoning_effort: medium
+
+      object_merging:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: first_success
+        reasoning_effort: medium
+
+      support_tree:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: first_success
+        reasoning_effort: medium
+
+      pickup_objects:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      ground_ref:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      camera_select:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+        reasoning_effort: medium
+
+      keyframe_select:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 400
+        response_policy: first_success
+
+      tracking_critic:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      mask_critic:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      box_detect:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  geometry_prior:
+    subagents:
+      ground_trust:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 1024
+        response_policy: single
+
+      mesh_orient:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+      z_anchor:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  physical_prior:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      material_classify:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  scene_prep:
+    droid:
+      main:
+        orchestrator:
+          type: llm
+          models:
+            - openai:gpt-5.4
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+  grasp_optimization:
+    sweep_or_loop: sweep
+    subagents:
+      grasp_loop_view_sufficiency:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+      grasp_loop_shift_decision:
+        type: vlm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  phystwin_visual:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  sysid:
+    phystwin:
+      main:
+        episode_agent:
+          type: llm
+          models:
+            - openai:gpt-5.4
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+        sysid_agent:
+          type: llm
+          models:
+            - openai:gpt-5.4
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+  g1sysid:
+    main:
+      motion_reader_agent:
+        type: llm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      convergence_agent:
+        type: llm
+        models:
+          - openai:gpt-5.4
+        temperature: null
+        max_tokens: 8192
+        response_policy: single

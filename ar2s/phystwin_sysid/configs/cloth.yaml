@@ -1,0 +1,29 @@
+data_type: "real"
+FPS: 30
+dt: 5e-5
+num_substeps: 667
+dashpot_damping: 100
+drag_damping: 3
+base_lr: 1e-3
+iterations: 40
+vis_interval: 20
+init_spring_Y: 3e4
+collide_elas: 0.5
+collide_fric: 0.3
+collide_object_elas: 0.7
+collide_object_fric: 0.3
+object_radius: 0.02
+object_max_neighbours: 30
+controller_radius: 0.04
+controller_max_neighbours: 50
+spring_Y_min: 0
+spring_Y_max: 1e5
+reverse_z: true
+vp_front: [1, 0, -2]
+vp_up: [0, 0, -1]
+vp_zoom: 1
+collision_dist: 0.02
+collision_learn: true
+chamfer_weight: 1.0
+track_weight: 1.0
+self_collision: true

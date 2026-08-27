@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ar2s"
+dynamic = ["version"]
+requires-python = ">=3.12"
+dependencies = [
+    "h5py==3.15.1",
+    "huggingface-hub==0.36.0",
+    "imageio",
+    "imageio-ffmpeg",
+    "ipython==9.9.0",
+    "httpx==0.28.1",
+    "opencv-python==4.11.0.86",
+    "pillow==11.3.0",
+    "protobuf==5.29.5",
+    "PyMuPDF==1.27.2.3",
+    "PyYAML==6.0.3",
+    "requests==2.32.5",
+    "tensorflow==2.20.0",
+    "tensorflow-datasets==4.9.9",
+    "usd-core>=25.5 ; platform_machine != 'aarch64' and python_version < '3.14'",
+]
+
+[project.optional-dependencies]
+torch-cu12 = ["torch>=2.7.0"]
+
+[tool.hatch.version]
+path = "ar2s/droid_sim/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+include = ["/ar2s", "/droid_data_utils"]
+
+[tool.uv.sources]
+warp-lang = { index = "nvidia" }
+torch = [{ index = "pytorch-cu128", extra = "torch-cu12" }]
+
+[[tool.uv.index]]
+url = "https://pypi.org/simple"
+
+[[tool.uv.index]]
+name = "nvidia"
+url = "https://pypi.nvidia.com/"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true

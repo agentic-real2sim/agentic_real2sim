@@ -1,0 +1,57 @@
+# Python cache and build artifacts
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Model weights and exported engines
+pretrained_models/*
+weight/
+weights/
+*.pth
+*.pt
+*.ckpt
+*.onnx
+*.engine
+*.plan
+
+# Local datasets and capture inputs
+DATA/
+SVO/
+*.svo
+episode_*_raw_videos/
+
+# Demo and experiment outputs
+output/
+output_*/
+output_droid*/
+test_outputs/
+segment_results*/
+mot_results*/
+runs/
+wandb/
+
+# Local archives
+*.zip
+meshes/

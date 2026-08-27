@@ -1,0 +1,280 @@
+schema_version: 1
+
+# All-Kimi NHR-gateway routing (API-free). Mirrors HAG4R's config_kimi_k26.yaml:
+# every LLM and VLM stage uses moonshotai/Kimi-K2.6 via the NHR LLM gateway
+# (https://hub.nhr.fau.de/api/llmgw/v1, key from $NHR_FAU_GATEWAY_API_KEY).
+# No Anthropic/OpenAI
+# keys required. If a VLM stage rejects images, switch that stage's model to
+# nhr_fau:RedHatAI/gemma-3-27b-it-quantized.w4a16 (multimodal).
+providers:
+  anthropic:
+    credential_env: ANTHROPIC_API_KEY
+  openai:
+    credential_env: OPENAI_API_AR2S_KEY
+  qwen:
+    credential_env: QWEN_API_KEY
+    base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
+  nhr_fau:
+    credential_env: NHR_FAU_GATEWAY_API_KEY
+    base_url: https://hub.nhr.fau.de/api/llmgw/v1
+
+model_overrides:
+  moonshotai/Kimi-K2.6:
+    min_max_tokens: 2048
+  RedHatAI/gemma-3-27b-it-quantized.w4a16:
+    min_max_tokens: 2048
+  RedHatAI/Mistral-Small-3.2-24B-Instruct-2506-FP8:
+    min_max_tokens: 2048
+
+stages:
+  pipeline:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  visual:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      scene_mismatch_critic:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 1500
+        response_policy: single
+
+      object_view_compare:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 1500
+        response_policy: single
+
+      pose_view_critic:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: single
+
+      object_discovery:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      object_merging:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: first_success
+
+      support_tree:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: first_success
+
+      pickup_objects:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      ground_ref:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      camera_select:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      keyframe_select:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 400
+        response_policy: first_success
+
+      tracking_critic:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      # Per-candidate segmentation judge (judge_candidate). Stays on Kimi:
+      # a global swap to a gemma/Mistral ensemble REGRESSED a full-batch A/B
+      # (45->33) by rejecting a different set of (often larger) objects here.
+      # Known weakness: it over-rejects small objects.
+      mask_critic:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      box_detect:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  geometry_prior:
+    subagents:
+      ground_trust:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 1024
+        response_policy: single
+
+      mesh_orient:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+      z_anchor:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  physical_prior:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      material_classify:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  scene_prep:
+    droid:
+      main:
+        orchestrator:
+          type: llm
+          models:
+            - nhr_fau:moonshotai/Kimi-K2.6
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+  grasp_optimization:
+    sweep_or_loop: sweep
+    subagents:
+      grasp_loop_view_sufficiency:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+      grasp_loop_shift_decision:
+        type: vlm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  phystwin_visual:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  sysid:
+    phystwin:
+      main:
+        episode_agent:
+          type: llm
+          models:
+            - nhr_fau:moonshotai/Kimi-K2.6
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+        sysid_agent:
+          type: llm
+          models:
+            - nhr_fau:moonshotai/Kimi-K2.6
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+  g1sysid:
+    main:
+      motion_reader_agent:
+        type: llm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      convergence_agent:
+        type: llm
+        models:
+          - nhr_fau:moonshotai/Kimi-K2.6
+        temperature: null
+        max_tokens: 8192
+        response_policy: single

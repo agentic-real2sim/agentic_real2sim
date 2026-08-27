@@ -1,0 +1,23 @@
+# ============================================================
+# Conda environment for ar2s.agents_g1sysid
+#
+# Create:  bash ar2s/agents_g1sysid/env_install/install_g1sysid.sh
+# Activate: conda activate "$PWD/.conda/g1sysid"
+# Update:  conda env update -p "$PWD/.conda/g1sysid" -f environment.yml --prune
+# ============================================================
+
+name: g1sysid
+
+channels:
+  - defaults
+  - conda-forge
+
+dependencies:
+  - python=3.12
+  - pip
+
+  - pip:
+    # Core runtime
+    - -r requirements.txt
+    # LLM agents (Stage 1 + convergence assessment)
+    - -r requirements_llm.txt

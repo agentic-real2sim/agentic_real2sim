@@ -1,0 +1,16 @@
+# Here we use cuda-12.1
+export PATH={YOUR_DIR}/cuda/cuda-12.1/bin:$PATH
+export LD_LIBRARY_PATH={YOUR_DIR}/cuda/cuda-12.1/lib64:$LD_LIBRARY_PATH
+# Current Blackwell/sysid install path: create .conda/phystwin and install
+# required packages in one shot. This is the supported entry point and it owns
+# the upstream gaussian_splatting namespace-loader setup.
+bash ./scripts/env_install_phystwin/install_sysid_5090.sh
+conda activate "$PWD/.conda/phystwin"
+
+# Legacy reference/manual recipes; they do not configure the supported
+# gaussian_splatting import namespace used by the current SysID pipeline:
+# bash ./scripts/env_install_phystwin/env_install.sh
+# bash ./scripts/env_install_phystwin/5090_env_install.sh
+
+# Download the necessary pretrained models for data processing
+bash ./scripts/env_install_phystwin/download_pretrained_models.sh

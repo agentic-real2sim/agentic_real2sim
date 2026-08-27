@@ -1,0 +1,267 @@
+schema_version: 1
+
+# Agent model configuration is the single source of model/backend selection.
+# Pipeline CLIs may select a different YAML file, but individual model/provider
+# choices belong here, not in CLI flags or backend-selection environment vars.
+providers:
+  openrouter:
+    credential_env: OPENROUTER_API_AR2S_KEY
+    base_url: https://openrouter.ai/api/v1
+
+model_overrides:
+  google/gemma-4-31b-it:
+    min_max_tokens: 16384
+    openrouter_reasoning_effort: "none"
+
+stages:
+  pipeline:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  visual:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      scene_mismatch_critic:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 1500
+        response_policy: single
+
+      object_view_compare:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 1500
+        response_policy: single
+
+      pose_view_critic:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: single
+
+      object_discovery:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+        reasoning_effort: medium
+
+      support_tree:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: first_success
+        reasoning_effort: medium
+
+      pickup_objects:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      object_merging:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 1024
+        response_policy: first_success
+        reasoning_effort: medium
+
+      ground_ref:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      camera_select:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+        reasoning_effort: medium
+
+      keyframe_select:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 400
+        response_policy: first_success
+
+      tracking_critic:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      mask_critic:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 2048
+        response_policy: fanout_all
+
+      box_detect:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  geometry_prior:
+    subagents:
+      ground_trust:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 1024
+        response_policy: single
+
+      mesh_orient:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+      z_anchor:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  physical_prior:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      material_classify:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: 0.0
+        max_tokens: 600
+        response_policy: first_success
+
+  scene_prep:
+    droid:
+      main:
+        orchestrator:
+          type: llm
+          models:
+            - openrouter:google/gemma-4-31b-it
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+  grasp_optimization:
+    sweep_or_loop: sweep
+    subagents:
+      grasp_loop_view_sufficiency:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+      grasp_loop_shift_decision:
+        type: vlm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  phystwin_visual:
+    main:
+      orchestrator:
+        type: llm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+  sysid:
+    phystwin:
+      main:
+        episode_agent:
+          type: llm
+          models:
+            - openrouter:google/gemma-4-31b-it
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+        sysid_agent:
+          type: llm
+          models:
+            - openrouter:google/gemma-4-31b-it
+          temperature: null
+          max_tokens: 8192
+          response_policy: single
+
+  g1sysid:
+    main:
+      motion_reader_agent:
+        type: llm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
+
+    subagents:
+      convergence_agent:
+        type: llm
+        models:
+          - openrouter:google/gemma-4-31b-it
+        temperature: null
+        max_tokens: 8192
+        response_policy: single
